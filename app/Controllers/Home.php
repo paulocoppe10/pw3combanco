@@ -52,4 +52,22 @@ class Home extends BaseController
 
         return redirect('pessoa');
     }
+
+    public function excluir($id = null){
+        $model = new PessoasModel();
+        $model->delete($id);
+        return redirect("pessoa");
+    }
+
+    public function editar($id = null){
+        $model = new PessoasModel();
+
+        $data = [
+            'pessoa' => $model->getPessoa($id)
+        ];
+
+        echo view('template/header');
+        echo view('cadastro-pessoas',$data);
+        echo view('template/footer');
+    }
 }
