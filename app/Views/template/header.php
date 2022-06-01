@@ -31,6 +31,7 @@
                             <a class="nav-link" href="contato">Contato</a>
                             <a class="nav-link" href="cadastro">Cadastro</a>
                             <a class="nav-link" href="pessoa">Pessoas</a>
+                            <a class="nav-link" href="login">Login</a>
                             
                         </div>
                         </div>
