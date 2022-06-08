@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\PessoasModel;
 
+
 class Home extends BaseController
 {
 
@@ -23,11 +24,15 @@ class Home extends BaseController
     public function pessoas(){
         $model = new PessoasModel();
 
-
         $data = [
             'title'=>'Pessoas',
-            'pessoas'=>$model->getPessoas()
+            'pessoas'=>$model->getPessoas(),
+            'session' =>\Config\Services::session()
         ];
+
+        if(!$data['session']->get('logado')){
+            return redirect("login");
+        }
 
         echo view('template/header');
         echo view('pessoa',$data);
@@ -35,12 +40,25 @@ class Home extends BaseController
     }
 
     public function cadastro(){
+
+        $data['session'] = \Config\Services::session();
+
+        if(!$data['session']->get('logado')){
+            return redirect("login");
+        }
+
         echo view('template/header');
         echo view('cadastro-pessoas');
         echo view('template/footer');
     }
 
     public function gravar(){
+        $data['session'] = \Config\Services::session();
+
+        if(!$data['session']->get('logado')){
+            return redirect("login");
+        }
+
         $model = new PessoasModel();
 
         $model->save([
@@ -54,6 +72,12 @@ class Home extends BaseController
     }
 
     public function excluir($id = null){
+        $data['session'] = \Config\Services::session();
+
+        if(!$data['session']->get('logado')){
+            return redirect("login");
+        }
+
         $model = new PessoasModel();
         $model->delete($id);
         return redirect("pessoa");
@@ -63,8 +87,13 @@ class Home extends BaseController
         $model = new PessoasModel();
 
         $data = [
-            'pessoa' => $model->getPessoa($id)
+            'pessoa' => $model->getPessoa($id),
+            'session'=>\Config\Services::session()
         ];
+
+        if(!$data['session']->get('logado')){
+            return redirect("login");
+        }
 
         echo view('template/header');
         echo view('cadastro-pessoas',$data);
@@ -84,11 +113,24 @@ class Home extends BaseController
         $nome = $this->request->getVar("nome");
 
         $data['usuario'] = $model->userLogin($nome, $senha);
+        $data['session'] = \Config\Services::session();
 
         if(empty($data['usuario'])){
             return redirect("login");
         }else{
+            $sessionData = [
+                'usuario' => $nome,
+                'logado' => TRUE
+            ];
+            $data['session']->set($sessionData);
             return redirect("pessoa");
+
         }
+    }
+
+    public function sair(){       
+        $data['session'] = \Config\Services::session();       
+        $data['session']->destroy();
+        return redirect("pessoa");      
     }
 }
